@@ -10,7 +10,7 @@ include $(THEOS)/makefiles/common.mk
 TWEAK_NAME = LilyWhite
 
 LilyWhite_FILES = Tweak.x
-LilyWhite_CFLAGS = -fobjc-arc -Wno-unused-parameter
+LilyWhite_CFLAGS = -fobjc-arc -Wno-unused-parameter -Wno-error=deprecated-declarations
 LilyWhite_FRAMEWORKS = UIKit QuartzCore CoreGraphics
 
 include $(THEOS_MAKE_PATH)/tweak.mk
