@@ -26,6 +26,21 @@ static void lwPrefsChangedCallback(CFNotificationCenterRef center,
                                   CFDictionaryRef userInfo);
 static void lw_findAndRefreshCapsuleInView(UIView *view);
 
+@interface LWCapsuleBackgroundView : UIView
+@property (nonatomic, assign) CGFloat cornerRadius;
+@property (nonatomic, assign) CGFloat marginX;
+@property (nonatomic, assign) CGFloat marginY;
+@property (nonatomic, strong) UIColor *capsuleColor;
+@property (nonatomic, assign) CGFloat capsuleAlpha;
+- (void)refresh;
+@end
+
+@interface UIView (LilyWhite)
+- (void)lw_attachCapsuleIfNeeded;
+- (void)lw_updateCapsuleFrame;
+- (void)lw_applyPrefsToCapsule:(LWCapsuleBackgroundView *)bg;
+@end
+
 static UIColor *LWColorFromHex(NSString *hex) {
     if (!hex) return [UIColor blackColor];
     NSString *clean = [hex stringByReplacingOccurrencesOfString:@"#" withString:@""];
@@ -57,15 +72,6 @@ static NSDictionary *LWReadPrefs(void) {
     }
     return defaults;
 }
-
-@interface LWCapsuleBackgroundView : UIView
-@property (nonatomic, assign) CGFloat cornerRadius;
-@property (nonatomic, assign) CGFloat marginX;
-@property (nonatomic, assign) CGFloat marginY;
-@property (nonatomic, strong) UIColor *capsuleColor;
-@property (nonatomic, assign) CGFloat capsuleAlpha;
-- (void)refresh;
-@end
 
 @implementation LWCapsuleBackgroundView
 
@@ -101,32 +107,6 @@ static NSDictionary *LWReadPrefs(void) {
     CGContextRestoreGState(ctx);
 }
 
-@end
-
-%hook UIStatusBar
-
-- (id)initWithFrame:(CGRect)frame {
-    self = %orig;
-    if (self) {
-        UIView *selfView = (UIView *)self;
-        [selfView lw_attachCapsuleIfNeeded];
-    }
-    return self;
-}
-
-- (void)layoutSubviews {
-    %orig;
-    UIView *selfView = (UIView *)self;
-    [selfView lw_attachCapsuleIfNeeded];
-    [selfView lw_updateCapsuleFrame];
-}
-
-%end
-
-@interface UIView (LilyWhite)
-- (void)lw_attachCapsuleIfNeeded;
-- (void)lw_updateCapsuleFrame;
-- (void)lw_applyPrefsToCapsule:(LWCapsuleBackgroundView *)bg;
 @end
 
 @implementation UIView (LilyWhite)
@@ -166,6 +146,26 @@ static NSDictionary *LWReadPrefs(void) {
 
 @end
 
+%hook UIStatusBar
+
+- (id)initWithFrame:(CGRect)frame {
+    self = %orig;
+    if (self) {
+        UIView *selfView = (UIView *)self;
+        [selfView lw_attachCapsuleIfNeeded];
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    %orig;
+    UIView *selfView = (UIView *)self;
+    [selfView lw_attachCapsuleIfNeeded];
+    [selfView lw_updateCapsuleFrame];
+}
+
+%end
+
 %hook SpringBoard
 
 - (void)applicationDidFinishLaunching:(id)app {
@@ -203,3 +203,4 @@ static void lw_findAndRefreshCapsuleInView(UIView *view) {
         }
     }
 }
+
