@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: LilyWhite-rootless-deb
-          path: ${{ github.workspace }}/.packages/*.deb
+          path: ${{ github.workspace }}/packages/*.deb
