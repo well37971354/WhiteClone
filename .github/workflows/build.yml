@@ -1,0 +1,36 @@
+name: Build LilyWhite Tweak
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  THEOS: ${{ github.workspace }}/theos
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install make dpkg ldid
+
+      - name: Setup Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+
+      - name: Build rootless package
+        run: |
+          cd ${{ github.workspace }}
+          export THEOS_PACKAGE_SCHEME=rootless
+          make package FINALPACKAGE=1
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LilyWhite-rootless-deb
+          path: ${{ github.workspace }}/.packages/*.deb
