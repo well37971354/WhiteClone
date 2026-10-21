@@ -1,0 +1,11 @@
+Package: com.lilywhite.clone
+Name: LilyWhite
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: Your whole status bar in one clean capsule.
+Maintainer: you
+Author: you
+Section: Tweaks
+Depends: firmware (>= 16.0)
+Conflicts:
+Provides: LilyWhite
